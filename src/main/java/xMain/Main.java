@@ -1,6 +1,6 @@
 package xMain;
 
-import controller.Controller;
+import controller.DataController;
 import ui.console.UIConsole;
 
 public class Main {
@@ -9,7 +9,7 @@ public class Main {
      * @param args - argumentele
      */
     public static void main(String[] args) {
-        Controller controller = new Controller();
+        DataController controller = new DataController();
         UIConsole uiConsole = new UIConsole(controller);
         uiConsole.run();
     }

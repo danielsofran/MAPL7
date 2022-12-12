@@ -15,7 +15,7 @@ public class PrietenieParser extends Parser<Prietenie>{
      */
     @Override
     public Prietenie parse(String[] strings) {
-        if(strings.length != 4)
+        if(strings.length < 4 || strings.length > 5)
             throw new IllegalArgumentException("Numar invalid de argumente!");
         Prietenie prietenie = new Prietenie();
         prietenie.setId(parseId(strings[0]));
@@ -24,7 +24,10 @@ public class PrietenieParser extends Parser<Prietenie>{
         DateTimeFormatter formatter = Utils.DATE_TIME_FORMATTER;
         LocalDateTime dateTime = LocalDateTime.parse(strings[3], formatter);
         prietenie.setFriendsFrom(dateTime);
-        prietenie.setState(PrietenieState.Accepted);
+        if (strings.length < 5)
+            prietenie.setState(PrietenieState.Accepted);
+        else
+            prietenie.setState(PrietenieState.valueOf(strings[4].trim()));
         return prietenie;
     }
 }

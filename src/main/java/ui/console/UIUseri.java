@@ -1,10 +1,9 @@
 package ui.console;
 
-import controller.Controller;
+import controller.DataController;
 import domain.User;
 import domain.UserDetail;
 import domain.UserDetails;
-import domain.parser.Parser;
 import utils.Utils;
 
 import java.util.Scanner;
@@ -12,10 +11,11 @@ import java.util.Scanner;
 public class UIUseri extends AbstractUI {
     /**
      * Constructor pentru interfata user-ilor, seteaza service-ul si scanner-ul
+     *
      * @param controller - controller-ul
-     * @param scanner - scannerul
+     * @param scanner    - scannerul
      */
-    public UIUseri(Controller controller, Scanner scanner, Parser<Long> parser) {
+    public UIUseri(DataController controller, Scanner scanner) {
         super(controller, scanner);
     }
 

@@ -4,12 +4,11 @@ import domain.Prietenie;
 import domain.User;
 import domain.UserDetail;
 import domain.UserDetails;
+import exceptii.ControllerException;
 import exceptii.NotExistentException;
 import repo.Repository;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class ServiceUser {
     protected Repository<Long, User> repoUser;
@@ -83,6 +82,22 @@ public class ServiceUser {
         if(user == null)
             throw new NotExistentException("Userul nu exista!");
         return user;
+    }
+
+    /**
+     * logs a user in
+     * @param text given identifier for user
+     * @return User if one exists matching text or null otherwise
+     */
+    public User login(String text, String password){
+        User rez = repoUser.findOne(user ->
+                (user.getEmail().trim().equals(text.trim()) || user.getName().equalsIgnoreCase(text))
+        );
+        if(rez == null)
+            throw new ControllerException("This user does not exist!");
+        if(Objects.equals(rez.getPassword(), password))
+            return rez;
+        throw new ControllerException("Wrong password!");
     }
 
     /**

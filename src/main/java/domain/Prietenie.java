@@ -121,6 +121,10 @@ public class Prietenie extends Entity<Long> implements Pereche<Long, Long> {
         return (id_user1.equals(id1) && id_user2.equals(id2)) || (id_user1.equals(id2) && id_user2.equals(id1));
     }
 
+    public Long getOther(Long id){
+        return (id_user1.equals(id)) ? id_user2 : id_user1;
+    }
+
     /**
      * verifica daca doua prietenii sunt identice
      * @param o - prietenia cu care se compara

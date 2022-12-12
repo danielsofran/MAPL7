@@ -1,6 +1,6 @@
 package ui.console;
 
-import controller.Controller;
+import controller.DataController;
 import domain.parser.IdParser;
 import domain.parser.Parser;
 import ui.UI;
@@ -9,22 +9,19 @@ import java.util.Scanner;
 
 public class UIConsole implements UI {
 
-    private UIPrietenii uiPrietenii;
-    private UIUseri uiUseri;
-    private Controller controller;
-    private Scanner scanner;
-    private Parser<Long> idParser;
+    private final UIPrietenii uiPrietenii;
+    private final UIUseri uiUseri;
+    private final Scanner scanner;
 
     /**
      * Constructor
      * @param controller - controller-ul, contine service-urile pentru entitati
      */
-    public UIConsole(Controller controller){
-        this.controller = controller;
+    public UIConsole(DataController controller){
         scanner = new Scanner(System.in);
-        idParser = new IdParser();
-        uiPrietenii = new UIPrietenii(controller, scanner, idParser);
-        uiUseri = new UIUseri(controller, scanner, idParser);
+        Parser<Long> idParser = new IdParser();
+        uiPrietenii = new UIPrietenii(controller, scanner);
+        uiUseri = new UIUseri(controller, scanner);
     }
 
     /**

@@ -1,12 +1,12 @@
 package ui.console;
 
-import controller.Controller;
+import controller.DataController;
 
 import java.util.Scanner;
 
 public abstract class AbstractUI {
     protected final Scanner scanner;
-    protected final Controller controller;
+    protected final DataController controller;
 
     /**
      * Constructor pentru interfata user-ilor, seteaza service-ul si scanner-ul
@@ -14,7 +14,7 @@ public abstract class AbstractUI {
      * @param controller - controller-ul
      * @param scanner    - scannerul
      */
-    public AbstractUI(Controller controller, Scanner scanner) {
+    public AbstractUI(DataController controller, Scanner scanner) {
         this.controller = controller;
         this.scanner = scanner;
     }

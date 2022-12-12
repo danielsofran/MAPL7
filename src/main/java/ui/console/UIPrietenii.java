@@ -1,10 +1,9 @@
 package ui.console;
 
-import controller.Controller;
+import controller.DataController;
 import domain.Prietenie;
 import domain.PrietenieState;
 import domain.User;
-import domain.parser.Parser;
 import exceptii.ParsingException;
 import graf.StrategiiCelMaiLungDrum;
 import utils.Pair;
@@ -18,10 +17,11 @@ import java.util.Set;
 public class UIPrietenii extends AbstractUI {
     /**
      * Constructor pentru interfata prietenilor, seteaza service-ul si scanner-ul
+     *
      * @param controller - controller-ul
-     * @param scanner - scannerul
+     * @param scanner    - scannerul
      */
-    public UIPrietenii(Controller controller, Scanner scanner, Parser<Long> parser) {
+    public UIPrietenii(DataController controller, Scanner scanner) {
         super(controller, scanner);
     }
 

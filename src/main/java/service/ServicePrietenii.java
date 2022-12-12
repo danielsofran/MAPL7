@@ -124,6 +124,28 @@ public class ServicePrietenii {
         return prietenie;
     }
 
+    public List<User> findPrieteni(User user){
+        return repoPrietenii.findAll().stream()
+                .filter(prietenie -> prietenie.contains(user.getId()))
+                .map(prietenie -> {
+                    if(Objects.equals(prietenie.getFirst(), user.getId())) return prietenie.getSecond();
+                    return prietenie.getFirst();
+                })
+                .filter(id_pr -> !id_pr.equals(user.getId()))
+                .map(id_pr -> repoUser.findOne(id_pr)).collect(Collectors.toList());
+    }
+
+    public User getOther(Prietenie prietenie, User user){
+        return repoUser.findOne(prietenie.getOther(user.getId()));
+    }
+
+    public List<Prietenie> findCereri(User user){
+        return repoPrietenii.findAll().stream()
+                .filter(prietenie -> prietenie.contains(user.getId()))
+                //.filter(prietenie -> prietenie.getState() == PrietenieState.Pending)
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * determina toate prietenile din repository

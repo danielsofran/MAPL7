@@ -9,4 +9,6 @@ module ui.graphic {
 
     opens ui.graphic to javafx.fxml;
     exports ui.graphic;
+    exports controller;
+    opens controller to javafx.fxml;
 }

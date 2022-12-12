@@ -4,7 +4,7 @@ import domain.User;
 import exceptii.ValidationException;
 
 public class UserValidator implements Validator<User> {
-    private Long zero = 0L;
+    private final Long zero = 0L;
 
     /**
      * Valideaza id-ul unui un user
