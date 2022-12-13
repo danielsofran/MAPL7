@@ -45,8 +45,6 @@ public class User extends Entity<Long> {
         this.email = email;
     }
 
-    public String nameProperty(){return name;}
-
     /**
      * getter pentru numele user-ului
      * @return numele user-ului

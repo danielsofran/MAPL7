@@ -93,6 +93,17 @@ public class ServicePrietenii {
         repoPrietenii.update(id, newPrietenie);
     }
 
+    public Prietenie acceptRequest(Prietenie prietenie){
+        update(prietenie.getId(), prietenie.getFirst(), prietenie.getSecond(), prietenie.getFriendsFrom(), PrietenieState.Accepted);
+        prietenie.setState(PrietenieState.Accepted);
+        return prietenie;
+    }
+
+    public Prietenie rejectRequest(Prietenie prietenie){
+        remove(prietenie.getId());
+        return null;
+    }
+
     /**
      * determina o prietenie dupa id
      * @param id - id-ul prieteniei cautate
@@ -108,17 +119,16 @@ public class ServicePrietenii {
 
     /**
      * determina o prietenie din repository
-     * @param id1 - id-ul primului user
-     * @param id2 - id-ul celui de-al doilea user
+     *
+     * @param user1 - id-ul primului user
+     * @param user2 - id-ul celui de-al doilea user
      * @return - prietenia determinata
      * @throws NotExistentException - daca prietenia nu exista
      */
-    public Prietenie findByUserIds(Long id1, Long id2) throws NotExistentException {
-        User user1 = repoUser.findOne(id1);
-        User user2 = repoUser.findOne(id2);
+    public Prietenie findByUserIds(User user1, User user2) throws NotExistentException {
         if(user1 == null || user2 == null)
             throw new NotExistentException("Unul din useri nu exista!");
-        Prietenie prietenie = repoPrietenii.findOne(e -> e.contains(id1, id2));
+        Prietenie prietenie = repoPrietenii.findOne(e -> e.contains(user1.getId(), user2.getId()));
         if(prietenie == null)
             throw new NotExistentException("Prietenia nu exista!");
         return prietenie;
@@ -127,6 +137,7 @@ public class ServicePrietenii {
     public List<User> findPrieteni(User user){
         return repoPrietenii.findAll().stream()
                 .filter(prietenie -> prietenie.contains(user.getId()))
+                .filter(prietenie -> prietenie.getState() == PrietenieState.Accepted)
                 .map(prietenie -> {
                     if(Objects.equals(prietenie.getFirst(), user.getId())) return prietenie.getSecond();
                     return prietenie.getFirst();
@@ -139,10 +150,27 @@ public class ServicePrietenii {
         return repoUser.findOne(prietenie.getOther(user.getId()));
     }
 
+    public Prietenie sendPrietenieRequest(User userFrom, User userTo){
+        Long id1 = userFrom.getId();
+        Long id2 = userTo.getId();
+        LocalDateTime friendsFrom = LocalDateTime.now();
+        PrietenieState prietenieState = PrietenieState.Pending;
+
+        if (repoUser.findOne(id1) == null || repoUser.findOne(id2) == null)
+            throw new NotExistentException("Unul dintre useri nu exista!");
+        Prietenie prietenie = new Prietenie(idGenerator, id1, id2, friendsFrom, prietenieState);
+        if (repoPrietenii.findOne(pr -> pr.equals(prietenie)) != null)
+            throw new DuplicatedElementException("Prietenia exista deja!");
+        repoPrietenii.save(prietenie);
+        idGenerator++;
+
+        return prietenie;
+    }
+
     public List<Prietenie> findCereri(User user){
         return repoPrietenii.findAll().stream()
-                .filter(prietenie -> prietenie.contains(user.getId()))
-                //.filter(prietenie -> prietenie.getState() == PrietenieState.Pending)
+                .filter(prietenie -> prietenie.getReceiverId() == user.getId() || prietenie.contains(user.getId()) &&prietenie.getState() != PrietenieState.Pending)
+                //s.filter(prietenie -> prietenie.getState() == PrietenieState.Pending)
                 .collect(Collectors.toList());
     }
 

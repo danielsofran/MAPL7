@@ -49,6 +49,16 @@ public class Prietenie extends Entity<Long> implements Pereche<Long, Long> {
         return id_user2;
     }
 
+    public Long getSenderId() { return id_user1; }
+    public Long getReceiverId() {return id_user2; }
+
+    public void setSenderId(Long id){
+        id_user1 = id;
+    }
+
+    public void setReceiverId(Long id){
+        id_user2 = id;
+    }
     /**
      * getter pentru momentul de cand cei doi useri sunt prieteni
      * @return - mometnul de cand cei doi useri sunt prieteni

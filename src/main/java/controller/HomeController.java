@@ -3,6 +3,9 @@ package controller;
 import domain.Prietenie;
 import domain.PrietenieState;
 import domain.User;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import ui.graphic.LoginApplication;
 import utils.Utils;
 
 import javafx.beans.value.ObservableValue;
@@ -14,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,6 +79,7 @@ public class HomeController {
     }
 
     public void searchChanged() {
+        //loadData();
         String searchtext = searchField.getText();
         List<User> useriShown;
         if(tooglePrieteni.isSelected()){
@@ -87,22 +92,32 @@ public class HomeController {
     }
 
     private void onPrietenieAccepted(Prietenie prietenie){
-
+        dataController.getServicePrietenii().acceptRequest(prietenie);
+        loadData();
     }
 
     private void onPrietenieRejected(Prietenie prietenie){
-
+        dataController.getServicePrietenii().rejectRequest(prietenie);
+        loadData();
     }
 
-    private void openProfile(User user){
+    private void openProfile(User user) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(LoginApplication.class.getClassLoader().getResource("profile.fxml"));
+        Scene profileScene = new Scene(fxmlLoader.load());
+        Stage profileStage = new Stage();
 
+        ProfileController ctrl = fxmlLoader.getController();
+        ctrl.setDataController(dataController);
+        ctrl.setCurrentUser(this.user);
+        ctrl.setOtherUser(user);
+        ctrl.setStage(profileStage);
+
+        profileStage.setTitle(user.getName()+"'s Profile");
+        profileStage.setScene(profileScene);
+        profileStage.show();
     }
 
-    /**
-     * init the lists and load data
-     */
-    @FXML
-    public void initialize() {
+    private void initializePersoaneTab(){
         tableUseri.setItems(useriList);
         numeColumn.setCellValueFactory(param -> {
             ObservableValue<String> val = new ObservableValueBase<>() {
@@ -122,14 +137,21 @@ public class HomeController {
                     rez.setText("Vizualizare");
 
                     rez.setOnAction(ev -> {
-                        openProfile(param.getValue());
+                        try {
+                            openProfile(param.getValue());
+                        }
+                        catch (IOException ex){
+                            ex.printStackTrace();
+                        }
                     });
 
                     return rez;
                 }
             };
         });
+    }
 
+    private void initializeCereriTab(){
         tableCereri.setItems(cereriList);
         numePrieten.setCellValueFactory(param -> {
             return new ObservableValueBase<String>() {
@@ -195,5 +217,13 @@ public class HomeController {
                 }
             };
         });
+    }
+    /**
+     * init the lists and load data
+     */
+    @FXML
+    public void initialize() {
+        initializePersoaneTab();
+        initializeCereriTab();
     }
 }
