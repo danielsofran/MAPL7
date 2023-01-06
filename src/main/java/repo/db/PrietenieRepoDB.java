@@ -1,9 +1,10 @@
-package repo;
+package repo.db;
 
 import domain.Prietenie;
 import domain.PrietenieState;
 import domain.validation.Validator;
 import exceptii.DuplicatedElementException;
+import repo.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -14,24 +15,17 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class PrietenieRepoDB implements Repository<Long, Prietenie> {
-    protected final Validator<Prietenie> validator;
-    protected final String url;
-    protected final String username;
-    protected final String password;
-
+public class PrietenieRepoDB extends AbstractRepoDB<Long, Prietenie> implements Repository<Long, Prietenie> {
     /**
-     * Constructorul clasei PrietenieRepoDB
+     * Constructorul clasei UserRepoDB
+     *
      * @param validator - validatorul
-     * @param url - url-ul bazei de date
-     * @param username - username-ul bazei de date
-     * @param password - parola userului bazei de date
+     * @param url       - url-ul bazei de date
+     * @param username  - username-ul bazei de date
+     * @param password  - parola userului bazei de date
      */
     public PrietenieRepoDB(Validator<Prietenie> validator, String url, String username, String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-        this.validator = validator;
+        super(validator, url, username, password);
     }
 
     /**
@@ -105,15 +99,8 @@ public class PrietenieRepoDB implements Repository<Long, Prietenie> {
         try(Connection connection = DriverManager.getConnection(url, username, password);
             PreparedStatement statement = connection.prepareStatement("SELECT * FROM \"Prietenii\"")) {
             try(ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    Long id = resultSet.getLong("id");
-                    Long id1 = resultSet.getLong("id_user1");
-                    Long id2 = resultSet.getLong("id_user2");
-                    LocalDate data = resultSet.getDate("data").toLocalDate();
-                    LocalTime time = resultSet.getTime("time").toLocalTime();
-                    PrietenieState state = PrietenieState.valueOf(resultSet.getString("prietenieState"));
-                    prietenii.add(new Prietenie(id, id1, id2, LocalDateTime.of(data, time), state));
-                }
+                while (resultSet.next())
+                    prietenii.add(extractPrietenie(resultSet));
             }
         }
         catch (SQLException e){

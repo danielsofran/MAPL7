@@ -8,9 +8,12 @@ import exceptii.ControllerException;
 import exceptii.NotExistentException;
 import repo.Repository;
 
+import utils.events.ChangedEvent;
+import utils.observer.*;
+
 import java.util.*;
 
-public class ServiceUser {
+public class ServiceUser extends MyAbstractObservable<ChangedEvent<User>> {
     protected Repository<Long, User> repoUser;
     protected Repository<Long, Prietenie> repoPrietenii;
     protected static Long idGenerator = 0L;

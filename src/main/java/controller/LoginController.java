@@ -2,15 +2,13 @@ package controller;
 
 import domain.User;
 import exceptii.MyException;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import ui.graphic.LoginApplication;
+import ui.graphic.GraphicApplication;
 
 import java.io.IOException;
 
@@ -33,16 +31,18 @@ public class LoginController {
     }
 
     public void showHome(User user) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginApplication.class.getClassLoader().getResource("home.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GraphicApplication.class.getClassLoader().getResource("home.fxml"));
         Scene homeScene = new Scene(fxmlLoader.load());
+        Stage homeStage = new Stage();
 
         HomeController ctrl = fxmlLoader.getController();
         ctrl.setDataController(dataController);
-        ctrl.setStage(stage);
+        ctrl.setStage(homeStage);
         ctrl.setUser(user);
 
-        stage.setTitle("Home");
-        stage.setScene(homeScene);
+        homeStage.setTitle(user.getName()+"'s Home");
+        homeStage.setScene(homeScene);
+        homeStage.show();
     }
 
     public void Login() {

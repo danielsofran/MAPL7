@@ -5,7 +5,8 @@ import domain.PrietenieState;
 import domain.User;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import ui.graphic.LoginApplication;
+import javafx.util.Callback;
+import ui.graphic.GraphicApplication;
 import utils.Utils;
 
 import javafx.beans.value.ObservableValue;
@@ -15,15 +16,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.util.Callback;
+import utils.events.ChangeEventType;
+import utils.events.ChangedEvent;
+import utils.observer.MyObserver;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class HomeController {
+public class HomeController implements MyObserver<ChangedEvent<Prietenie>> {
     private DataController dataController;
     private User user;
 
@@ -33,6 +36,7 @@ public class HomeController {
 
     public void setDataController(DataController controller){
         this.dataController = controller;
+        dataController.getServicePrietenii().addObserver(this);
     }
 
     public void setStage(Stage stage){
@@ -53,6 +57,8 @@ public class HomeController {
     private TableColumn<User, String> numeColumn;
     @FXML
     private TableColumn<User, Button> profileColumn;
+    @FXML
+    private TableColumn<User, Button> msgColumn;
     @FXML
     private ToggleButton tooglePrieteni;
 
@@ -79,7 +85,6 @@ public class HomeController {
     }
 
     public void searchChanged() {
-        //loadData();
         String searchtext = searchField.getText();
         List<User> useriShown;
         if(tooglePrieteni.isSelected()){
@@ -102,7 +107,7 @@ public class HomeController {
     }
 
     private void openProfile(User user) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(LoginApplication.class.getClassLoader().getResource("profile.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(GraphicApplication.class.getClassLoader().getResource("profile.fxml"));
         Scene profileScene = new Scene(fxmlLoader.load());
         Stage profileStage = new Stage();
 
@@ -115,6 +120,22 @@ public class HomeController {
         profileStage.setTitle(user.getName()+"'s Profile");
         profileStage.setScene(profileScene);
         profileStage.show();
+    }
+
+    private void openMesaje(User user) throws IOException{
+        FXMLLoader fxmlLoader = new FXMLLoader(GraphicApplication.class.getClassLoader().getResource("message.fxml"));
+        Scene messageScene = new Scene(fxmlLoader.load());
+        Stage messageStage = new Stage();
+
+        MessageController ctrl = fxmlLoader.getController();
+        ctrl.setDataController(dataController);
+        ctrl.setUserFrom(this.user);
+        ctrl.setUserTo(user);
+        ctrl.setStage(messageStage);
+
+        messageStage.setTitle(user.getName()+"'s Messages");
+        messageStage.setScene(messageScene);
+        messageStage.show();
     }
 
     private void initializePersoaneTab(){
@@ -133,7 +154,8 @@ public class HomeController {
                 @Override
                 public Button getValue() {
                     Button rez = new Button();
-                    rez.setStyle("-fx-font-family: Verdana; -fx-font-size: 12px; -fx-background-color: rgba(28,167,227,0.5)");
+                    rez.getStylesheets().add("stylesheet.css");
+                    rez.getStyleClass().setAll("vizualizare");
                     rez.setText("Vizualizare");
 
                     rez.setOnAction(ev -> {
@@ -149,12 +171,31 @@ public class HomeController {
                 }
             };
         });
+        msgColumn.setCellValueFactory(param -> {
+            return new ObservableValueBase<Button>() {
+                @Override
+                public Button getValue() {
+                    Button rez = new Button("Mesaj");
+                    rez.getStylesheets().add("stylesheet.css");
+                    rez.getStyleClass().setAll("vizualizare");
+                    rez.setOnAction(ev -> {
+                        try{
+                            openMesaje(param.getValue());
+                        }
+                        catch (IOException ex){
+                            ex.printStackTrace();
+                        }
+                    });
+                    return rez;
+                }
+            };
+        });
     }
 
     private void initializeCereriTab(){
         tableCereri.setItems(cereriList);
         numePrieten.setCellValueFactory(param -> {
-            return new ObservableValueBase<String>() {
+            return new ObservableValueBase<>() {
                 @Override
                 public String getValue() {
                     Prietenie prietenie = param.getValue();
@@ -185,7 +226,8 @@ public class HomeController {
                 public Button getValue() {
                     if(param.getValue().getState() == PrietenieState.Pending) {
                         Button rez = new Button();
-                        rez.setStyle("-fx-font-family: Verdana; -fx-font-size: 12px; -fx-background-color: rgba(50,222,50,0.5)");
+                        rez.getStylesheets().add("stylesheet.css");
+                        rez.getStyleClass().setAll("acceptBtn");
                         rez.setText("Accept");
 
                         rez.setOnAction(ev -> {
@@ -204,7 +246,8 @@ public class HomeController {
                 public Button getValue() {
                     if(param.getValue().getState() == PrietenieState.Pending) {
                         Button rez = new Button();
-                        rez.setStyle("-fx-font-family: Verdana; -fx-font-size: 12px; -fx-background-color: rgba(220,32,32,0.5)");
+                        rez.getStylesheets().add("stylesheet.css");
+                        rez.getStyleClass().add("rejectBtn");
                         rez.setText("Reject");
 
                         rez.setOnAction(ev -> {
@@ -225,5 +268,26 @@ public class HomeController {
     public void initialize() {
         initializePersoaneTab();
         initializeCereriTab();
+    }
+
+    @Override
+    public void update(ChangedEvent<Prietenie> prietenieChangedEvent)
+    {
+        Prietenie prietenie = prietenieChangedEvent.getData();
+        //MessageBox.showSuccessMessage(stage, user.getName()+" received updated prietenie with type "+prietenieChangedEvent.getType().toString());
+        switch (prietenieChangedEvent.getType()) {
+            case ADDED:
+                if((Objects.equals(prietenie.getReceiverId(), user.getId()) || prietenie.getState() == PrietenieState.Accepted) &&
+                    cereriList.stream().filter(pr -> pr.contains(prietenie.getFirst(), prietenie.getSecond())).count() == 0)
+                        cereriList.add(prietenie);
+                break;
+            case REMOVED:
+                cereriList.remove(prietenieChangedEvent.getOldData());
+                break;
+            case UPDATED:
+                cereriList.remove(prietenieChangedEvent.getOldData());
+                cereriList.add(prietenie);
+                break;
+        }
     }
 }

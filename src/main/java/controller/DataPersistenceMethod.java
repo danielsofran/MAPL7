@@ -1,5 +1,5 @@
 package controller;
 
-public enum DataPersistence {
+public enum DataPersistenceMethod {
     InMemory, InFile, InDatabase
 }

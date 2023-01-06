@@ -30,7 +30,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Label alignment="CENTER" style="-fx-alignment: center;" text="Nume: " GridPane.halignment="RIGHT">
+                        <Label alignment="CENTER" styleClass="text-right" text="Nume: " GridPane.halignment="RIGHT">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
@@ -38,7 +38,7 @@
                               <Font name="Verdana" size="18.0" />
                            </font>
                         </Label>
-                        <Label style="-fx-margin: auto;" text="Email: " GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                        <Label styleClass="text-right" text="Email: " GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>

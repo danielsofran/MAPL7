@@ -1,0 +1,30 @@
+.vizualizare {
+    -fx-font-family: Verdana;
+    -fx-font-size: 12px;
+    -fx-background-color: rgba(28,167,227,0.5);
+    -fx-padding: 4;
+    -fx-border-radius: 35%;
+    -fx-border-width: 1px;
+    -fx-border-color: #0c6565;
+}
+
+.acceptBtn {
+    -fx-font-family: Verdana;
+    -fx-font-size: 12px;
+    -fx-background-color: rgba(50,222,50,0.5);
+    -fx-padding: 4;
+    -fx-border-radius: 35%;
+    -fx-border-width: 1px;
+    -fx-border-color: #0c6565;
+}
+
+.rejectBtn{
+    -fx-font-family: Verdana;
+    -fx-font-size: 12px;
+    -fx-background-color: rgba(220,32,32,0.5);
+    -fx-padding: 4;
+    -fx-border-radius: 35%;
+    -fx-border-width: 1px;
+    -fx-border-color: #f59191;
+}
+

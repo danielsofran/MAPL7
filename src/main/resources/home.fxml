@@ -38,7 +38,7 @@
                                           <Insets right="30.0" />
                                        </HBox.margin>
                                     </TextField>
-                                    <ToggleButton fx:id="tooglePrieteni" ellipsisString="" minWidth="78.0" mnemonicParsing="false" onAction="#searchChanged" prefHeight="50.0" prefWidth="78.0" text="Prieteni" textAlignment="CENTER">
+                                    <ToggleButton fx:id="tooglePrieteni" ellipsisString="" minWidth="78.0" mnemonicParsing="false" onAction="#searchChanged" prefHeight="50.0" prefWidth="78.0" styleClass="prieteniToogle" stylesheets="@stylesheet.css" text="Prieteni" textAlignment="CENTER">
                                        <HBox.margin>
                                           <Insets right="30.0" />
                                        </HBox.margin>
@@ -60,7 +60,8 @@
                               <TableView fx:id="tableUseri" prefHeight="490.0" prefWidth="602.0" style="-fx-alignment: CENTER;" tableMenuButtonVisible="true">
                                 <columns>
                                   <TableColumn fx:id="numeColumn" editable="false" prefWidth="299.19999998807907" style="-fx-font-family: Verdana; -fx-font-size: 14; -fx-alignment: CENTER;" text="Nume" />
-                                  <TableColumn fx:id="profileColumn" editable="false" prefWidth="301.60003662109375" resizable="false" sortable="false" style="-fx-alignment: CENTER;" />
+                                  <TableColumn fx:id="profileColumn" editable="false" prefWidth="168.7999267578125" resizable="false" sortable="false" style="-fx-alignment: CENTER;" />
+                                    <TableColumn fx:id="msgColumn" editable="false" maxWidth="160.00003051757812" minWidth="-1.0" prefWidth="132.80001831054688" resizable="false" sortable="false" style="-fx-alignment: CENTER;" />
                                 </columns>
                                  <columnResizePolicy>
                                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

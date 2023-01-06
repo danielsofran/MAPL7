@@ -1,8 +1,9 @@
-package repo;
+package repo.db;
 
 import domain.User;
 import domain.validation.Validator;
 import exceptii.DuplicatedElementException;
+import repo.Repository;
 
 import java.sql.*;
 import java.util.Collection;
@@ -10,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class UserRepoDB extends AbstractRepoDB<Long, User> implements Repository<Long, User>{
+public class UserRepoDB extends AbstractRepoDB<Long, User> implements Repository<Long, User> {
     /**
      * Constructorul clasei UserRepoDB
      *

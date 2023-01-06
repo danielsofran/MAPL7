@@ -1,5 +1,6 @@
 package service;
 
+import domain.Mesaj;
 import domain.Prietenie;
 import domain.PrietenieState;
 import domain.User;
@@ -11,12 +12,17 @@ import graf.GrafListaAdiacenta;
 import graf.StrategiiCelMaiLungDrum;
 import repo.Repository;
 import utils.Pair;
+import utils.events.ChangeEventType;
+import utils.events.ChangedEvent;
+import utils.observer.MyAbstractObservable;
+import utils.observer.MyObservable;
+import utils.observer.MyObserver;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ServicePrietenii {
+public class ServicePrietenii extends MyAbstractObservable<ChangedEvent<Prietenie>> {
     protected Repository<Long, User> repoUser;
     protected Repository<Long, Prietenie> repoPrietenii;
     protected Long idGenerator;
@@ -50,6 +56,7 @@ public class ServicePrietenii {
         if (repoPrietenii.findOne(pr -> pr.equals(prietenie)) != null)
             throw new DuplicatedElementException("Prietenia exista deja!");
         repoPrietenii.save(prietenie);
+        notifyObservers(new ChangedEvent<>(ChangeEventType.ADDED, prietenie));
         idGenerator++;
     }
 
@@ -58,6 +65,8 @@ public class ServicePrietenii {
      * @param id - id-ul prieteniei de sters
      */
     public void remove(Long id) {
+        Prietenie stearsa = findOne(id);
+        notifyObservers(new ChangedEvent<>(ChangeEventType.REMOVED, null, stearsa));
         repoPrietenii.delete(id);
     }
 
@@ -71,6 +80,8 @@ public class ServicePrietenii {
         Prietenie stearsa = repoPrietenii.delete(prietenie -> prietenie.contains(id1, id2));
         if (stearsa == null)
             throw new NotExistentException("Prietenia nu exista!");
+        else
+            notifyObservers(new ChangedEvent<>(ChangeEventType.REMOVED, null, stearsa));
     }
 
     /**
@@ -90,6 +101,7 @@ public class ServicePrietenii {
         if(friendsFrom == null)
             friendsFrom = oldPrietenie.getFriendsFrom();
         Prietenie newPrietenie = new Prietenie(id, id1, id2, friendsFrom, prietenieState);
+        notifyObservers(new ChangedEvent<>(ChangeEventType.UPDATED, newPrietenie, findOne(id)));
         repoPrietenii.update(id, newPrietenie);
     }
 
@@ -162,6 +174,7 @@ public class ServicePrietenii {
         if (repoPrietenii.findOne(pr -> pr.equals(prietenie)) != null)
             throw new DuplicatedElementException("Prietenia exista deja!");
         repoPrietenii.save(prietenie);
+        notifyObservers(new ChangedEvent<>(ChangeEventType.ADDED, prietenie));
         idGenerator++;
 
         return prietenie;

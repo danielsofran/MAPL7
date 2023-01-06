@@ -13,14 +13,19 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import utils.events.ChangeEventType;
+import utils.events.ChangedEvent;
+import utils.observer.MyObserver;
 
-public class ProfileController {
+import java.util.Objects;
+
+public class ProfileController implements MyObserver<ChangedEvent<Prietenie>> {
     private DataController dataController;
     private User currentUser = null;
     private User otherUser = null;
     private Prietenie prietenie = null;
 
-    private ObservableList<User> prieteniList = FXCollections.observableArrayList();
+    private final ObservableList<User> prieteniList = FXCollections.observableArrayList();
     private Stage stage;
 
     private void getPrietenie(){
@@ -37,6 +42,7 @@ public class ProfileController {
 
     public void setDataController(DataController controller){
         this.dataController = controller;
+        dataController.getServicePrietenii().addObserver(this);
         getPrietenie();
     }
 
@@ -83,13 +89,29 @@ public class ProfileController {
 
     private void sendRequest(){
         prietenie = dataController.getServicePrietenii().sendPrietenieRequest(currentUser, otherUser);
-        updateButton();
     }
 
     public void deletePrietenie(){
         dataController.getServicePrietenii().remove(prietenie.getId());
         prietenie = null;
+    }
+
+    @Override
+    public void update(ChangedEvent<Prietenie> prietenieChangedEvent) {
+        prietenie = prietenieChangedEvent.getData();
         updateButton();
+        switch (prietenieChangedEvent.getType())
+        {
+            case ADDED:
+            case UPDATED:
+                if(prietenie.getState() == PrietenieState.Accepted && !prieteniList.contains(currentUser))
+                    prieteniList.add(currentUser);
+                break;
+            case REMOVED:
+                prieteniList.remove(currentUser);
+                break;
+        }
+        //loadData();
     }
 
     private void updateButton(){
@@ -107,12 +129,21 @@ public class ProfileController {
             removeBtn.setDisable(true);
         }
         else if(prietenie.getState() == PrietenieState.Pending){
-            sendBtn.setText("Cererea a fost trimisa");
-            sendBtn.setDisable(true);
-            sendBtn.setVisible(true);
-            removeBtn.setVisible(true);
-            removeBtn.setDisable(false);
-            removeBtn.setText("Retrage cererea");
+            if(Objects.equals(prietenie.getSenderId(), currentUser.getId())) {
+                sendBtn.setText("Cererea a fost trimisa");
+                sendBtn.setDisable(true);
+                sendBtn.setVisible(true);
+                removeBtn.setVisible(true);
+                removeBtn.setDisable(false);
+                removeBtn.setText("Retrage cererea");
+            }
+            else {
+                sendBtn.setText("Aveti o cerere de prietenie!");
+                sendBtn.setDisable(true);
+                sendBtn.setVisible(true);
+                removeBtn.setVisible(false);
+                removeBtn.setDisable(true);
+            }
         }
         else{
             sendBtn.setDisable(true);

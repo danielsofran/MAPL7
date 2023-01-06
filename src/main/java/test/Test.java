@@ -1,7 +1,7 @@
 package test;
 
 import controller.DataController;
-import controller.DataPersistence;
+import controller.DataPersistenceMethod;
 import domain.PrietenieState;
 import domain.UserDetails;
 import exceptii.DuplicatedElementException;
@@ -17,7 +17,7 @@ public class Test {
      * @param args - args
      */
     public static void main(String[] args) {
-        DataController controller = new DataController(DataPersistence.InMemory);
+        DataController controller = new DataController(DataPersistenceMethod.InMemory);
         controller.clear();
 
         UserDetails user1 = new UserDetails(); user1.add("Numehthg", "Email1", "Pasw1");

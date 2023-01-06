@@ -11,8 +11,8 @@ import domain.validation.PrietenieValidator;
 import domain.validation.UserValidator;
 import repo.FileRepository;
 import repo.InMemoryRepository;
-import repo.PrietenieRepoDB;
-import repo.UserRepoDB;
+import repo.db.PrietenieRepoDB;
+import repo.db.UserRepoDB;
 
 import java.io.IOException;
 import java.nio.file.Files;
